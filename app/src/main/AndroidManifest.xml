@@ -12,6 +12,10 @@
         android:theme="@style/Theme.AppCompat.Light"
         >
 
+        <service
+            android:name=".EarthquakeUpdateService"
+            android:enabled="true" />
+
         <meta-data
             android:name="android.app.default_searchable"
             android:value=".EarthquakeSearchResults"

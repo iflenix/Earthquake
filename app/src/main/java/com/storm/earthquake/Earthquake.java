@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -45,15 +46,24 @@ public class Earthquake extends ActionBarActivity {
         searchView.setSubmitButtonEnabled(true);
 
 
-
+        registerReceiver(uiUpdated, new IntentFilter("com.storm.dataUpdated"));
     }
+
+    private BroadcastReceiver uiUpdated = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            TextView tv = (TextView) findViewById(R.id.update_time_textview);
+            tv.setText("Updated: " + intent.getExtras().getString("TIME_UPDATED"));
+        }
+    };
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SHOW_PREFERENCES) {
             updateFromPreferences();
-            FragmentManager fm = getFragmentManager();
+           /* FragmentManager fm = getFragmentManager();
             final EarthquakeListFragment earthquakeList = (EarthquakeListFragment) fm.findFragmentById(R.id.EarthquakeListFragment);
             Thread t = new Thread(new Runnable() {
                 @Override
@@ -61,7 +71,7 @@ public class Earthquake extends ActionBarActivity {
                     earthquakeList.refreshEarthquakes();
                 }
             });
-            t.start();
+            t.start();*/
         }
     }
 

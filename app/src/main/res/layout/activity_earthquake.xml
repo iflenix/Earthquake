@@ -9,6 +9,13 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".Earthquake">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/update_time_textview"
+        android:layout_gravity="right" />
+
     <SearchView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
