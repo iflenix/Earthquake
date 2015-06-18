@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -139,7 +140,7 @@ public class Earthquake extends ActionBarActivity {
             Toast.makeText(this, "Unchecked", Toast.LENGTH_SHORT).show();*/
 
 
-        File file = getDir("",MODE_PRIVATE);
+        File file = getDir("", MODE_PRIVATE);
         Toast.makeText(this, file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         File ringtonesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_RINGTONES);
         Toast.makeText(this, ringtonesDir.getAbsolutePath(), Toast.LENGTH_LONG).show();
@@ -203,4 +204,7 @@ public class Earthquake extends ActionBarActivity {
 
 
     }
+
 }
+
+

@@ -54,12 +54,7 @@ public class EarthquakeUpdateService extends Service {
 
     @Override
     public void onCreate() {
-/*        updateTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                refreshEarthquakes();
-            }
-        }, 10000 );*/
+
         super.onCreate();
         updateTimer = new Timer("earthquakeUpdates");
     }
