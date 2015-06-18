@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference android:key="PREF_TEST_CHECKBOX"
+        android:title="Test Checkbox"
+        android:summary="Just do it"
+        android:defaultValue="false"/>
+    <ListPreference
+        android:key="PREF_TEST_LIST"
+        android:title="Test List"
+        android:summary="summary test"
+        android:entries="@array/update_freq_options"
+        android:entryValues="@array/update_freq_values"
+        android:dialogTitle="Refresh frequency"
+        android:defaultValue="5"/>
+    <EditTextPreference android:key="TEST_TEXT"
+        android:title="Test Text"
+        android:summary="Enter test text"
+        />
+
+</PreferenceScreen>
