@@ -2,7 +2,9 @@ package com.storm.earthquake;
 
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.LoaderManager;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.BroadcastReceiver;
@@ -84,6 +86,9 @@ public class Earthquake extends ActionBarActivity {
         minimumMagnitude = Integer.parseInt(prefs.getString(FragmentPreferences.PREF_MIN_MAG, "3"));
         updateFreq = Integer.parseInt(prefs.getString(FragmentPreferences.PREF_UPDATE_FREQ, "60"));
         autoUpdateChecked = prefs.getBoolean(preferences.PREF_AUTO_UPDATE, false);
+        FragmentManager fm = getFragmentManager();
+        Fragment listFragment = fm.findFragmentById(R.id.EarthquakeListFragment);
+        listFragment.getLoaderManager().restartLoader(0, null, (LoaderManager.LoaderCallbacks<? extends Object>) listFragment);
 
     }
 

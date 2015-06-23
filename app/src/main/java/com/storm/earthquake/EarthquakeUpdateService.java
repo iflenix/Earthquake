@@ -1,5 +1,7 @@
 package com.storm.earthquake;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -9,6 +11,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
 import android.util.Log;
@@ -44,19 +47,17 @@ import javax.xml.parsers.ParserConfigurationException;
 public class EarthquakeUpdateService extends Service {
 
     public static String TAG = "EARTHQUAKE_UPDATE_SERVICE";
-    private Timer updateTimer;
-    private TimerTask doRefresh = new TimerTask() {
-        @Override
-        public void run() {
-            refreshEarthquakes();
-        }
-    };
+
+    private AlarmManager alarmManager;
+    private PendingIntent alarmIntent;
 
     @Override
     public void onCreate() {
-
         super.onCreate();
-        updateTimer = new Timer("earthquakeUpdates");
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intentToFire = new Intent(EarthquakeAlarmReceiver.ACTION_REFRESH_EARTHQUAKE_ALARM);
+        alarmIntent = PendingIntent.getBroadcast(this, 0, intentToFire, 0);
+
     }
 
     @Override
@@ -71,21 +72,24 @@ public class EarthquakeUpdateService extends Service {
         int updateFreq = Integer.parseInt(prefs.getString(preferences.PREF_UPDATE_FREQ, "60"));
         boolean autoUpdateChecked = prefs.getBoolean(preferences.PREF_AUTO_UPDATE, false);
 
-        updateTimer.cancel();
+        //updateTimer.cancel();
         if (autoUpdateChecked) {
-            updateTimer = new Timer("earthquakeUpdates");
-            updateTimer.scheduleAtFixedRate(doRefresh, 0, updateFreq * 60 * 1000);
-        } else {
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    refreshEarthquakes();
-                }
-            });
-            t.start();
-        }
+            int alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP;
+            long timeTorefresh = SystemClock.elapsedRealtime() + updateFreq * 60 * 1000;
+            alarmManager.setInexactRepeating(alarmType, timeTorefresh, updateFreq * 60 * 1000, alarmIntent);
 
-        return Service.START_STICKY;
+        } else
+            alarmManager.cancel(alarmIntent);
+
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                refreshEarthquakes();
+            }
+        });
+        t.start();
+
+        return Service.START_NOT_STICKY;
     }
 
     private void addNewQuake(Quake _quake) {
@@ -177,16 +181,15 @@ public class EarthquakeUpdateService extends Service {
         } catch (SAXException e) {
             e.printStackTrace();
         } finally {
+            Intent updIntent = new Intent("com.storm.dataUpdated");
+
+            Time time = new Time();
+            time.setToNow();
+            updIntent.putExtra("TIME_UPDATED", time.format("%H-%M-%S"));
+            sendBroadcast(updIntent);
+            stopSelf();
+
         }
-
-        Intent updIntent = new Intent("com.storm.dataUpdated");
-
-
-        Time time = new Time();
-        time.setToNow();
-        updIntent.putExtra("TIME_UPDATED", time.format("%H-%M-%S"));
-        sendBroadcast(updIntent);
-
 
     }
 }

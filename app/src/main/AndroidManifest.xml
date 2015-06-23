@@ -47,5 +47,13 @@
                 android:resource="@xml/searchable"
                 />
         </activity>
+        <receiver
+            android:name=".EarthquakeAlarmReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.storm.earthquake.ACTION_REFRESH_EARTHQUAKE_ALARM"></action>
+            </intent-filter>
+        </receiver>
+
     </application>
 </manifest>
