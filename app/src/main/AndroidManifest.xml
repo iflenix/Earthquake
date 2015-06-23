@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.storm.earthquake">
 
+    <uses-sdk android:minSdkVersion="19" />
+
 
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -9,7 +11,9 @@
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.AppCompat.Light"
+        android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
+        android:uiOptions="splitActionBarWhenNarrow"
+
         >
 
         <service

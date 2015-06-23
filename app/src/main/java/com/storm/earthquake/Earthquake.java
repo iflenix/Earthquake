@@ -1,5 +1,6 @@
 package com.storm.earthquake;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.Fragment;
@@ -29,7 +30,7 @@ import android.widget.Toast;
 import java.io.File;
 
 
-public class Earthquake extends ActionBarActivity {
+public class Earthquake extends Activity {
 
     public int minimumMagnitude = 0;
     public boolean autoUpdateChecked = false;
@@ -56,7 +57,11 @@ public class Earthquake extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             TextView tv = (TextView) findViewById(R.id.update_time_textview);
-            tv.setText("Updated: " + intent.getExtras().getString("TIME_UPDATED"));
+            String updString = "Updated: " + intent.getExtras().getString("TIME_UPDATED");
+            tv.setText(updString);
+            ActionBar actionBar = getActionBar();
+
+            actionBar.setSubtitle(updString);
         }
     };
 

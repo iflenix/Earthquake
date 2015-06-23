@@ -1,6 +1,7 @@
 package com.storm.earthquake;
 
 import android.app.AlarmManager;
+import android.app.IntentService;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
@@ -15,8 +16,6 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
 import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,13 +28,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -44,12 +40,20 @@ import javax.xml.parsers.ParserConfigurationException;
 /**
  * Created by HOME on 18.06.2015.
  */
-public class EarthquakeUpdateService extends Service {
+public class EarthquakeUpdateService extends IntentService {
 
     public static String TAG = "EARTHQUAKE_UPDATE_SERVICE";
 
     private AlarmManager alarmManager;
     private PendingIntent alarmIntent;
+
+    public EarthquakeUpdateService() {
+        super("EarthquakeUpdateService");
+    }
+
+    public EarthquakeUpdateService(String name) {
+        super(name);
+    }
 
     @Override
     public void onCreate() {
@@ -66,7 +70,8 @@ public class EarthquakeUpdateService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    protected void onHandleIntent(Intent intent) {
+
         Context context = getApplicationContext();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         int updateFreq = Integer.parseInt(prefs.getString(preferences.PREF_UPDATE_FREQ, "60"));
@@ -77,20 +82,13 @@ public class EarthquakeUpdateService extends Service {
             int alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP;
             long timeTorefresh = SystemClock.elapsedRealtime() + updateFreq * 60 * 1000;
             alarmManager.setInexactRepeating(alarmType, timeTorefresh, updateFreq * 60 * 1000, alarmIntent);
-
         } else
             alarmManager.cancel(alarmIntent);
 
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                refreshEarthquakes();
-            }
-        });
-        t.start();
+        refreshEarthquakes();
 
-        return Service.START_NOT_STICKY;
     }
+
 
     private void addNewQuake(Quake _quake) {
 
@@ -187,8 +185,6 @@ public class EarthquakeUpdateService extends Service {
             time.setToNow();
             updIntent.putExtra("TIME_UPDATED", time.format("%H-%M-%S"));
             sendBroadcast(updIntent);
-            stopSelf();
-
         }
 
     }
