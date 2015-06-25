@@ -30,7 +30,8 @@
         android:text="Test"
         android:id="@+id/testButton"
         android:layout_gravity="top"
-        android:onClick="onTestButtonClick" />
+        android:onClick="onTestButtonClick"
+        android:visibility="gone" />
 
     <Button
         android:layout_width="wrap_content"
@@ -38,14 +39,15 @@
         android:text="Download"
         android:id="@+id/downloadButton"
         android:layout_gravity="top"
-        android:onClick="onDownloadButtonClick" />
+        android:onClick="onDownloadButtonClick"
+        android:visibility="gone" />
 
-    <fragment
-        android:id="@+id/EarthquakeListFragment"
-        android:name="com.storm.earthquake.EarthquakeListFragment"
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:id="@+id/EarthquakeFragmentContainer">
 
-
+    </FrameLayout>
 
     </LinearLayout>

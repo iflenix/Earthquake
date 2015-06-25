@@ -174,6 +174,7 @@ public class EarthquakeUpdateService extends IntentService {
             Log.d(TAG, "MalformedURLException");
         } catch (IOException e) {
             Log.d(TAG, "IOException");
+            e.printStackTrace();
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } catch (SAXException e) {

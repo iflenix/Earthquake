@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -36,6 +37,63 @@ public class Earthquake extends Activity {
     public boolean autoUpdateChecked = false;
     public int updateFreq = 0;
 
+    TabListener<EarthquakeListFragment> listTabListener;
+    TabListener<EarthquakeMapFragment> mapTabListener;
+
+    private static String ACTION_BAR_INDEX = "ACTION_BAR_INDEX";
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        View fragmentContainer = findViewById(R.id.EarthquakeFragmentContainer);
+        boolean tabletLayout = fragmentContainer == null;
+        if (!tabletLayout) {
+            int actionBarIndex = getActionBar().getSelectedTab().getPosition();
+            SharedPreferences.Editor editor = getPreferences(Activity.MODE_PRIVATE).edit();
+            editor.putInt(ACTION_BAR_INDEX, actionBarIndex);
+            editor.apply();
+
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            if (mapTabListener.fragment != null) {
+                ft.detach(mapTabListener.fragment);
+            }
+            if (listTabListener.fragment != null) {
+                ft.detach(listTabListener.fragment);
+            }
+            ft.commit();
+        }
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onResume() {
+        View fragmentContainer = findViewById(R.id.EarthquakeFragmentContainer);
+        boolean tabletLayout = fragmentContainer == null;
+        if (!tabletLayout) {
+            SharedPreferences sp = getPreferences(MODE_PRIVATE);
+            int actionBarIndex = sp.getInt(ACTION_BAR_INDEX, 0);
+            getActionBar().setSelectedNavigationItem(actionBarIndex);
+        }
+        super.onResume();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        View fragmentContainer = findViewById(R.id.EarthquakeFragmentContainer);
+        boolean tabletLayout = fragmentContainer == null;
+        if (!tabletLayout) {
+            listTabListener.fragment = getFragmentManager()
+                    .findFragmentByTag(EarthquakeListFragment.class.getName());
+            mapTabListener.fragment = getFragmentManager()
+                    .findFragmentByTag(EarthquakeMapFragment.class.getName());
+            SharedPreferences sp = getPreferences(Activity.MODE_PRIVATE);
+            int actionBarIndex = sp.getInt(ACTION_BAR_INDEX, 0);
+            getActionBar().setSelectedNavigationItem(actionBarIndex);
+        }
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,8 +107,31 @@ public class Earthquake extends Activity {
         searchView.setSearchableInfo(searchableInfo);
         searchView.setSubmitButtonEnabled(true);
 
-
         registerReceiver(uiUpdated, new IntentFilter("com.storm.dataUpdated"));
+
+        ActionBar actionBar = getActionBar();
+        View fragmentContainer = findViewById(R.id.EarthquakeFragmentContainer);
+        boolean tabletLayout = fragmentContainer == null;
+
+        if (!tabletLayout) {
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setDisplayShowHomeEnabled(false);
+            ActionBar.Tab listTab = actionBar.newTab();
+            listTabListener = new TabListener<>(this, R.id.EarthquakeFragmentContainer, EarthquakeListFragment.class);
+
+            listTab.setText("List").setContentDescription("List of earthquakes").setTabListener(listTabListener);
+            actionBar.addTab(listTab);
+
+            ActionBar.Tab mapTab = actionBar.newTab();
+            mapTabListener = new TabListener<>(this, R.id.EarthquakeFragmentContainer, EarthquakeMapFragment.class);
+            ;
+            mapTab.setText("Map").setContentDescription("Map of earthquakes").setTabListener(mapTabListener);
+
+            actionBar.addTab(mapTab);
+        }
+
     }
 
     private BroadcastReceiver uiUpdated = new BroadcastReceiver() {
@@ -71,6 +152,7 @@ public class Earthquake extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SHOW_PREFERENCES) {
             updateFromPreferences();
+            startService(new Intent(this, EarthquakeUpdateService.class));
            /* FragmentManager fm = getFragmentManager();
             final EarthquakeListFragment earthquakeList = (EarthquakeListFragment) fm.findFragmentById(R.id.EarthquakeListFragment);
             Thread t = new Thread(new Runnable() {
@@ -91,9 +173,11 @@ public class Earthquake extends Activity {
         minimumMagnitude = Integer.parseInt(prefs.getString(FragmentPreferences.PREF_MIN_MAG, "3"));
         updateFreq = Integer.parseInt(prefs.getString(FragmentPreferences.PREF_UPDATE_FREQ, "60"));
         autoUpdateChecked = prefs.getBoolean(preferences.PREF_AUTO_UPDATE, false);
+/*
         FragmentManager fm = getFragmentManager();
         Fragment listFragment = fm.findFragmentById(R.id.EarthquakeListFragment);
         listFragment.getLoaderManager().restartLoader(0, null, (LoaderManager.LoaderCallbacks<? extends Object>) listFragment);
+*/
 
     }
 
@@ -198,21 +282,57 @@ public class Earthquake extends Activity {
                         }
                         myDownload.close();
 
-
                     }
                 {
-
-
                 }
             }
         };
 
-
         IntentFilter dwnldFilter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-
         registerReceiver(downloadStateReceiver, dwnldFilter);
 
+    }
 
+    public static class TabListener<T extends Fragment> implements ActionBar.TabListener {
+        private Fragment fragment;
+        private Activity activity;
+        private Class<T> fragmentClass;
+        private int fragmentContainer;
+
+
+        public TabListener(Activity activity, int fragmentContainer, Class<T> fragmentClass) {
+            this.activity = activity;
+            this.fragmentContainer = fragmentContainer;
+            this.fragmentClass = fragmentClass;
+        }
+
+
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            if (fragment == null) {
+                String fragmentName = fragmentClass.getName();
+                fragment = Fragment.instantiate(activity, fragmentName);
+                fragmentTransaction.add(fragmentContainer, fragment, fragmentName);
+            } else
+                fragmentTransaction.attach(fragment);
+
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            if (fragment != null) {
+                fragmentTransaction.detach(fragment);
+            }
+
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            if (fragment != null) {
+                fragmentTransaction.attach(fragment);
+            }
+
+        }
     }
 
 }
