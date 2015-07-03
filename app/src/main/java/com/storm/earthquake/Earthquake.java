@@ -21,8 +21,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -132,6 +134,9 @@ public class Earthquake extends Activity {
             actionBar.addTab(mapTab);
         }
 
+        TextView updTextView = (TextView) findViewById(R.id.update_time_textview);
+        registerForContextMenu(updTextView);
+
     }
 
     private BroadcastReceiver uiUpdated = new BroadcastReceiver() {
@@ -183,12 +188,24 @@ public class Earthquake extends Activity {
 
     private static final int MENU_PREFERENCES = Menu.FIRST + 1;
     private static final int MENU_UPDATE = Menu.FIRST + 2;
+    private static final int MENU_TEST = Menu.FIRST + 3;
 
 
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_earthquake, menu);
-        menu.add(0, MENU_PREFERENCES, Menu.NONE, R.string.menu_preferences);
+
+        SubMenu sub = menu.addSubMenu(0, 0, Menu.NONE, "Submenu");
+        sub.setHeaderIcon(R.drawable.abc_btn_radio_to_on_mtrl_000);
+        sub.setIcon(R.drawable.abc_list_selector_holo_light);
+
+        sub.add(0, 0, 0, "SubmenuItem1");
+        sub.add(0, 0, 0, "SubmenuItem2");
+
+        //menu.add(0, MENU_PREFERENCES, Menu.NONE, R.string.menu_preferences);
+        // menu.add(Menu.NONE, MENU_TEST, Menu.NONE, "Test").setCheckable(true);
+
+        //menu.findItem(MENU_TEST).setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS).setIcon(R.drawable.abc_ic_menu_paste_mtrl_am_alpha);
 
         return true;
     }
@@ -202,12 +219,21 @@ public class Earthquake extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+
         switch (id) {
             case (MENU_PREFERENCES): {
                 Intent i = new Intent(this, FragmentPreferences.class);
                 startActivityForResult(i, SHOW_PREFERENCES);
                 return true;
             }
+            case R.id.menu_preferences_item: {
+                Intent i = new Intent(this, FragmentPreferences.class);
+                startActivityForResult(i, SHOW_PREFERENCES);
+                return true;
+            }
+            case R.id.menu_test_item:
+                Toast.makeText(this, "Test", Toast.LENGTH_SHORT).show();
+                return true;
         }
 
         //noinspection SimplifiableIfStatement
@@ -216,6 +242,37 @@ public class Earthquake extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private final int MENU_COLOR_RED = 1;
+    private final int MENU_COLOR_GREEN = 2;
+    private final int MENU_COLOR_BLUE = 3;
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        switch (v.getId()) {
+            case R.id.update_time_textview:
+                menu.add(0, MENU_COLOR_BLUE, 0, "Blue");
+                menu.add(0, MENU_COLOR_GREEN, 0, "Green");
+                menu.add(0, MENU_COLOR_RED, 0, "Red");
+                break;
+
+        }
+
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case
+        }
+
+
+        return super.onContextItemSelected(item);
+
     }
 
     public void onTestButtonClick(View v) {

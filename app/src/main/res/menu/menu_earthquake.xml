@@ -1,4 +1,15 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" tools:context=".Earthquake">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_preferences_item"
+        android:title="@string/menu_preferences_item"
+        android:showAsAction="always"
+        android:icon="@drawable/abc_ic_menu_selectall_mtrl_alpha"></item>
+    <item
+        android:title="@string/menu_test_item"
+        android:id="@+id/menu_test_item"
+        android:icon="@drawable/abc_ic_menu_copy_mtrl_am_alpha"
+        android:showAsAction="always"></item>
+
+
 </menu>
