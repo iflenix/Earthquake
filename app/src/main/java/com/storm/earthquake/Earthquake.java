@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,6 +31,8 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 
 
@@ -43,6 +46,8 @@ public class Earthquake extends Activity {
     TabListener<EarthquakeMapFragment> mapTabListener;
 
     private static String ACTION_BAR_INDEX = "ACTION_BAR_INDEX";
+
+    TextView updTextView;
 
 
     @Override
@@ -134,7 +139,7 @@ public class Earthquake extends Activity {
             actionBar.addTab(mapTab);
         }
 
-        TextView updTextView = (TextView) findViewById(R.id.update_time_textview);
+        updTextView = (TextView) findViewById(R.id.update_time_textview);
         registerForContextMenu(updTextView);
 
     }
@@ -267,10 +272,17 @@ public class Earthquake extends Activity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case
+            case MENU_COLOR_BLUE:
+                updTextView.setTextColor(Color.BLUE);
+                break;
+            case MENU_COLOR_GREEN:
+                updTextView.setTextColor(Color.GREEN);
+                break;
+            case MENU_COLOR_RED:
+                updTextView.setTextColor(Color.RED);
+                break;
+
         }
-
-
         return super.onContextItemSelected(item);
 
     }
