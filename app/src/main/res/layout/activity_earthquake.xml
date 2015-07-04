@@ -16,13 +16,6 @@
         android:id="@+id/update_time_textview"
         android:layout_gravity="right" />
 
-    <SearchView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/searchView"
-        android:iconifiedByDefault="false"
-        android:background="#FFF">
-    </SearchView>
 
     <Button
         android:layout_width="wrap_content"

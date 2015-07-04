@@ -107,12 +107,7 @@ public class Earthquake extends Activity {
         setContentView(R.layout.activity_earthquake);
         updateFromPreferences();
 
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
 
-        SearchView searchView = (SearchView) findViewById(R.id.searchView);
-        searchView.setSearchableInfo(searchableInfo);
-        searchView.setSubmitButtonEnabled(true);
 
         registerReceiver(uiUpdated, new IntentFilter("com.storm.dataUpdated"));
 
@@ -198,14 +193,20 @@ public class Earthquake extends Activity {
 
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_earthquake, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
 
-        SubMenu sub = menu.addSubMenu(0, 0, Menu.NONE, "Submenu");
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        searchView.setSearchableInfo(searchableInfo);
+
+       /* SubMenu sub = menu.addSubMenu(0, 0, Menu.NONE, "Submenu");
         sub.setHeaderIcon(R.drawable.abc_btn_radio_to_on_mtrl_000);
         sub.setIcon(R.drawable.abc_list_selector_holo_light);
 
         sub.add(0, 0, 0, "SubmenuItem1");
-        sub.add(0, 0, 0, "SubmenuItem2");
+        sub.add(0, 0, 0, "SubmenuItem2");*/
 
         //menu.add(0, MENU_PREFERENCES, Menu.NONE, R.string.menu_preferences);
         // menu.add(Menu.NONE, MENU_TEST, Menu.NONE, "Test").setCheckable(true);
@@ -224,7 +225,6 @@ public class Earthquake extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-
         switch (id) {
             case (MENU_PREFERENCES): {
                 Intent i = new Intent(this, FragmentPreferences.class);
@@ -239,14 +239,34 @@ public class Earthquake extends Activity {
             case R.id.menu_test_item:
                 Toast.makeText(this, "Test", Toast.LENGTH_SHORT).show();
                 return true;
+
+
+            case R.id.menu_refresh:
+                Intent intent = new Intent(this, EarthquakeUpdateService.class);
+                startService(intent);
+                return true;
+            case R.id.menu_preferences:
+                Intent i = new Intent(this, FragmentPreferences.class);
+                startActivityForResult(i, SHOW_PREFERENCES);
+                return true;
+            case R.id.menu_fullscreen:
+                if (item.isChecked()) {
+                    getCurrentFocus().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                    item.setChecked(false);
+                } else {
+                    getCurrentFocus().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_FULLSCREEN);
+
+                    item.setChecked(true);
+                }
+                return true;
+
+            default:
+                return false;
+
         }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
-        return super.onOptionsItemSelected(item);
+        //return super.onOptionsItemSelected(item);
     }
 
     private final int MENU_COLOR_RED = 1;
