@@ -3,6 +3,7 @@ package com.storm.earthquake;
 import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -12,7 +13,9 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import org.w3c.dom.Document;
@@ -57,6 +60,33 @@ public class EarthquakeListFragment extends ListFragment implements LoaderManage
 
         refreshEarthquakes();
 
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        ContentResolver cr = getActivity().getContentResolver();
+        Cursor cursor = cr.query(ContentUris.withAppendedId(EarthquakeProvider.CONTENT_URI, id), null, null, null, null);
+        if (cursor.moveToFirst()) {
+
+            Date date = new Date(cursor.getLong(cursor.getColumnIndex(EarthquakeProvider.KEY_DATE)));
+            String Details = cursor.getString(cursor.getColumnIndex(EarthquakeProvider.KEY_DETAILS));
+            double Magnitude = cursor.getDouble(cursor.getColumnIndex(EarthquakeProvider.KEY_MAGNITUDE));
+            String linkString = cursor.getString(cursor.getColumnIndex(EarthquakeProvider.KEY_LINK));
+            double lat = cursor.getDouble(cursor.getColumnIndex(EarthquakeProvider.KEY_LOCATION_LAT));
+            double lng = cursor.getDouble(cursor.getColumnIndex(EarthquakeProvider.KEY_LOCATION_LNG));
+            Location loc = new Location("db");
+            loc.setLatitude(lat);
+            loc.setLongitude(lng);
+
+            Quake quake = new Quake(date, Details, loc, Magnitude, linkString);
+
+            EarthquakeDialog infoDialog = EarthquakeDialog.newInstance(getActivity(), quake);
+            infoDialog.show(getFragmentManager(), "QUAKE_INFO_DIALOG");
+
+        }
+
+
+        cursor.close();
     }
 
     public static final String TAG = "EARTHQUAKE";

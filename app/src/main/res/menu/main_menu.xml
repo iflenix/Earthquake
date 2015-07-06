@@ -24,5 +24,12 @@
         android:checked="false">
 
     </item>
+    <item
+        android:id="@+id/menu_dialog"
+        android:title="Show dialog"
+        android:icon="@android:drawable/ic_dialog_alert"
+        android:showAsAction="always|withText">
+
+    </item>
 
 </menu>

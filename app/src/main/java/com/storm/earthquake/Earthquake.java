@@ -2,6 +2,8 @@ package com.storm.earthquake;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -11,6 +13,7 @@ import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -34,6 +37,8 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class Earthquake extends Activity {
@@ -226,21 +231,6 @@ public class Earthquake extends Activity {
         int id = item.getItemId();
 
         switch (id) {
-            case (MENU_PREFERENCES): {
-                Intent i = new Intent(this, FragmentPreferences.class);
-                startActivityForResult(i, SHOW_PREFERENCES);
-                return true;
-            }
-            case R.id.menu_preferences_item: {
-                Intent i = new Intent(this, FragmentPreferences.class);
-                startActivityForResult(i, SHOW_PREFERENCES);
-                return true;
-            }
-            case R.id.menu_test_item:
-                Toast.makeText(this, "Test", Toast.LENGTH_SHORT).show();
-                return true;
-
-
             case R.id.menu_refresh:
                 Intent intent = new Intent(this, EarthquakeUpdateService.class);
                 startService(intent);
@@ -259,12 +249,19 @@ public class Earthquake extends Activity {
                     item.setChecked(true);
                 }
                 return true;
+            case R.id.menu_dialog:
+/*                Dialog dialog = new Dialog(Earthquake.this);
+                dialog.setTitle("Dialog Title");
+                dialog.setContentView(android.R.layout.select_dialog_item);
+                dialog.show();*/
+                showDialog(1);
+                return true;
+
 
             default:
                 return false;
 
         }
-
 
         //return super.onOptionsItemSelected(item);
     }
@@ -283,10 +280,7 @@ public class Earthquake extends Activity {
                 menu.add(0, MENU_COLOR_GREEN, 0, "Green");
                 menu.add(0, MENU_COLOR_RED, 0, "Red");
                 break;
-
         }
-
-
     }
 
     @Override
@@ -305,6 +299,42 @@ public class Earthquake extends Activity {
         }
         return super.onContextItemSelected(item);
 
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        if (id == 1) {
+            AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            adb.setTitle("Title");
+            adb.setMessage("Dialog Message");
+            adb.setIcon(android.R.drawable.ic_dialog_alert);
+            adb.setPositiveButton("OK!", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+
+            adb.setNegativeButton("Nope", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+            return adb.create();
+        }
+        return super.onCreateDialog(id);
+    }
+
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog) {
+        if (id == 1) {
+            AlertDialog alertDialog = (AlertDialog) dialog;
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            alertDialog.setMessage(sdf.format(new Date(System.currentTimeMillis())));
+        }
+
+        super.onPrepareDialog(id, dialog);
     }
 
     public void onTestButtonClick(View v) {
