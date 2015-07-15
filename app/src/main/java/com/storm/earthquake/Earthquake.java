@@ -114,8 +114,6 @@ public class Earthquake extends Activity {
         updateFromPreferences();
         fragmentManager = getFragmentManager();
 
-
-
         registerReceiver(uiUpdated, new IntentFilter("com.storm.dataUpdated"));
 
         ActionBar actionBar = getActionBar();
@@ -144,6 +142,12 @@ public class Earthquake extends Activity {
         updTextView = (TextView) findViewById(R.id.update_time_textview);
         registerForContextMenu(updTextView);
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(uiUpdated);
+        super.onDestroy();
     }
 
     private BroadcastReceiver uiUpdated = new BroadcastReceiver() {

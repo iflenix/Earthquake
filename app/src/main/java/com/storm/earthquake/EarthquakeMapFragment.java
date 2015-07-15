@@ -70,13 +70,13 @@ public class EarthquakeMapFragment extends Fragment {
         String selection = EarthquakeProvider.KEY_MAGNITUDE + " > " + minMagnitude;
         Cursor cursor = cr.query(EarthquakeProvider.CONTENT_URI, projection, selection, null, null);
         while (cursor.moveToNext()) {
-            double latitude, longtitude;
+            double latitude, longitude;
             String summary;
             latitude = cursor.getDouble(cursor.getColumnIndex(EarthquakeProvider.KEY_LOCATION_LAT));
-            longtitude = cursor.getDouble(cursor.getColumnIndex(EarthquakeProvider.KEY_LOCATION_LNG));
+            longitude = cursor.getDouble(cursor.getColumnIndex(EarthquakeProvider.KEY_LOCATION_LNG));
             summary = cursor.getString(cursor.getColumnIndex(EarthquakeProvider.KEY_SUMMARY));
             MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(new LatLng(latitude, longtitude)).title(summary);
+            markerOptions.position(new LatLng(latitude, longitude)).title(summary);
             markerPoints.add(markerOptions);
         }
         cursor.close();
