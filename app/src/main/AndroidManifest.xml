@@ -23,6 +23,8 @@
             android:name="android.app.default_searchable"
             android:value=".EarthquakeSearchResults"
             />
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBBqI61UkW-Wy4nmhBrHzKnHWssQckr5SU"/>
 
         <activity android:name=".preferences"
             android:label="Earthquake Preferences">

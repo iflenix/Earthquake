@@ -53,6 +53,7 @@ public class Earthquake extends Activity {
     private static String ACTION_BAR_INDEX = "ACTION_BAR_INDEX";
 
     TextView updTextView;
+    public static FragmentManager fragmentManager;
 
 
     @Override
@@ -111,6 +112,7 @@ public class Earthquake extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_earthquake);
         updateFromPreferences();
+        fragmentManager = getFragmentManager();
 
 
 
