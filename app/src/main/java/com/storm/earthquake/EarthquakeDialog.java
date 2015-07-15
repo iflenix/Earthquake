@@ -11,9 +11,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
- * Created by HOME on 06.07.2015.
+ * Created by HOME on 06.07.2015. at home
  */
 public class EarthquakeDialog extends DialogFragment {
     private static String DIALOG_STRING = "DIALOG_STRING";
@@ -21,7 +22,7 @@ public class EarthquakeDialog extends DialogFragment {
     public static EarthquakeDialog newInstance(Context context, Quake quake) {
         EarthquakeDialog fragment = new EarthquakeDialog();
         Bundle args = new Bundle();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US);
         String dateString = sdf.format(quake.getDate());
         String quakeString = dateString + "\n" + "Magnitude: " + quake.getMagnitude() + "\n" + quake.getDetails() +
                 "\n" + quake.getLink();

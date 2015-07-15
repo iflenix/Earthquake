@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 
 /**
@@ -48,6 +47,7 @@ public class EarthquakeProvider extends ContentProvider {
     }
 
     private static final HashMap<String, String> SEARCH_PROJECTION_MAP;
+
     static {
         SEARCH_PROJECTION_MAP = new HashMap<String, String>();
         SEARCH_PROJECTION_MAP.put(SearchManager.SUGGEST_COLUMN_TEXT_1, KEY_SUMMARY +
@@ -92,9 +92,6 @@ public class EarthquakeProvider extends ContentProvider {
     }
 
 
-
-
-
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
@@ -104,13 +101,16 @@ public class EarthquakeProvider extends ContentProvider {
         qb.setTables(EarthquakeDatabaseHelper.DATABASE_TABLE);
 
         switch (uriMatcher.match(uri)) {
-            case QUAKE_ID: qb.appendWhere(KEY_ID + "=" + uri.getPathSegments().get(1));
+            case QUAKE_ID:
+                qb.appendWhere(KEY_ID + "=" + uri.getPathSegments().get(1));
                 break;
-            case SEARCH  : qb.appendWhere(KEY_SUMMARY + " LIKE \"%" +
-                    uri.getPathSegments().get(1) + "%\"");
+            case SEARCH:
+                qb.appendWhere(KEY_SUMMARY + " LIKE \"%" +
+                        uri.getPathSegments().get(1) + "%\"");
                 qb.setProjectionMap(SEARCH_PROJECTION_MAP);
                 break;
-            default      : break;
+            default:
+                break;
         }
 
 
@@ -134,12 +134,12 @@ public class EarthquakeProvider extends ContentProvider {
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values){
+    public Uri insert(Uri uri, ContentValues values) {
         earthquakeDatabase = dbHelper.getWritableDatabase();
         long insertedRowId = earthquakeDatabase.insert(EarthquakeDatabaseHelper.DATABASE_TABLE, "quake", values);
 
         if (insertedRowId > 0) {
-            Uri resUri = ContentUris.withAppendedId(CONTENT_URI,insertedRowId);
+            Uri resUri = ContentUris.withAppendedId(CONTENT_URI, insertedRowId);
             getContext().getContentResolver().notifyChange(resUri, null);
             return resUri;
         }
@@ -153,15 +153,16 @@ public class EarthquakeProvider extends ContentProvider {
 
         int count;
 
-        switch (uriMatcher.match(uri)){
+        switch (uriMatcher.match(uri)) {
             case QUAKE_ID:
-                selection = KEY_ID + " = " + uri.getPathSegments().get(1) + (!TextUtils.isEmpty(selection)?"AND (" + selection + ")" : "");
-                count = earthquakeDatabase.delete(EarthquakeDatabaseHelper.DATABASE_TABLE,selection,selectionArgs);
+                selection = KEY_ID + " = " + uri.getPathSegments().get(1) + (!TextUtils.isEmpty(selection) ? "AND (" + selection + ")" : "");
+                count = earthquakeDatabase.delete(EarthquakeDatabaseHelper.DATABASE_TABLE, selection, selectionArgs);
                 break;
             case QUAKES:
-                count = earthquakeDatabase.delete(EarthquakeDatabaseHelper.DATABASE_TABLE,selection,selectionArgs);
+                count = earthquakeDatabase.delete(EarthquakeDatabaseHelper.DATABASE_TABLE, selection, selectionArgs);
                 break;
-            default: throw new IllegalArgumentException("Unsupported Uri" + uri);
+            default:
+                throw new IllegalArgumentException("Unsupported Uri" + uri);
 
         }
 
@@ -183,7 +184,8 @@ public class EarthquakeProvider extends ContentProvider {
             case QUAKES:
                 count = earthquakeDatabase.update(EarthquakeDatabaseHelper.DATABASE_TABLE, values, selection, selectionArgs);
                 break;
-            default: throw new IllegalArgumentException("Unsupported Uri" + uri);
+            default:
+                throw new IllegalArgumentException("Unsupported Uri" + uri);
         }
 
         return count;

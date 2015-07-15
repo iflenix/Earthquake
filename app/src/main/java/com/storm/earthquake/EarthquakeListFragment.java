@@ -10,20 +10,17 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Created by StorM on 18.04.2015.
+ * Created by StorM on 18.04.2015. TIME TOO FLY TO THE MOON
  */
 public class EarthquakeListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    ArrayList<Quake> earthquakes = new ArrayList<Quake>();
     private SimpleCursorAdapter adapter;
 
     @Override
@@ -68,8 +65,6 @@ public class EarthquakeListFragment extends ListFragment implements LoaderManage
         cursor.close();
     }
 
-    public static final String TAG = "EARTHQUAKE";
-    private Handler handler = new Handler();
 
     public void refreshEarthquakes() {
         getLoaderManager().restartLoader(0, null, EarthquakeListFragment.this);
@@ -79,15 +74,14 @@ public class EarthquakeListFragment extends ListFragment implements LoaderManage
     }
 
 
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String[] projection = new String[]{EarthquakeProvider.KEY_ID, EarthquakeProvider.KEY_SUMMARY};
 
         Earthquake earthquakeActivity = (Earthquake) getActivity();
         String where = EarthquakeProvider.KEY_MAGNITUDE + " > " + earthquakeActivity.minimumMagnitude;
-        CursorLoader loader = new CursorLoader(earthquakeActivity, EarthquakeProvider.CONTENT_URI, projection, where, null, null);
-        return loader;
+        return new CursorLoader(earthquakeActivity, EarthquakeProvider.CONTENT_URI, projection, where, null, null);
+
     }
 
     @Override

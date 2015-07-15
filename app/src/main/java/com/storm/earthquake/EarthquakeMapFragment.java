@@ -1,6 +1,5 @@
 package com.storm.earthquake;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -46,9 +45,6 @@ public class EarthquakeMapFragment extends Fragment {
         }*/
 
         googleMap = mMapView.getMap();
-        // latitude and longitude
-        double latitude = 17.385044;
-        double longitude = 78.486671;
 
         getMarkers();
         drawMarkers();
@@ -66,7 +62,7 @@ public class EarthquakeMapFragment extends Fragment {
         ContentResolver cr = getActivity().getContentResolver();
         Context context = getActivity().getApplicationContext();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String minMagnitude = preferences.getString(FragmentPreferences.PREF_MIN_MAG,"0");
+        String minMagnitude = preferences.getString(FragmentPreferences.PREF_MIN_MAG, "0");
 
 
         String[] projection = new String[]{EarthquakeProvider.KEY_SUMMARY,
@@ -75,7 +71,7 @@ public class EarthquakeMapFragment extends Fragment {
         Cursor cursor = cr.query(EarthquakeProvider.CONTENT_URI, projection, selection, null, null);
         while (cursor.moveToNext()) {
             double latitude, longtitude;
-            String summary = "";
+            String summary;
             latitude = cursor.getDouble(cursor.getColumnIndex(EarthquakeProvider.KEY_LOCATION_LAT));
             longtitude = cursor.getDouble(cursor.getColumnIndex(EarthquakeProvider.KEY_LOCATION_LNG));
             summary = cursor.getString(cursor.getColumnIndex(EarthquakeProvider.KEY_SUMMARY));
