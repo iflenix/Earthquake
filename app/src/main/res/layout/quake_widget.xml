@@ -16,5 +16,13 @@
         android:textSize="14sp"
         android:gravity="center_vertical"
         android:text="Unknown"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/widget_updated_time"
+        android:textSize="24sp"
+        android:gravity="center_vertical"
+        android:text="hh:mm"
+        android:textColor="#FF0000"/>
 
 </LinearLayout>

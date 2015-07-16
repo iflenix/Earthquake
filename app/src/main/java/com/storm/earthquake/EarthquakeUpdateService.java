@@ -78,6 +78,8 @@ public class EarthquakeUpdateService extends IntentService {
         return null;
     }
 
+    public static String QUAKES_REFRESHED = "com.storm.earthquake.QUAKES_REFRESHED";
+
     @Override
     protected void onHandleIntent(Intent intent) {
 
@@ -94,6 +96,8 @@ public class EarthquakeUpdateService extends IntentService {
         } else
             alarmManager.cancel(alarmIntent);
         refreshEarthquakes();
+        sendBroadcast(new Intent(QUAKES_REFRESHED));
+
     }
 
     private void addNewQuake(Quake _quake) {
