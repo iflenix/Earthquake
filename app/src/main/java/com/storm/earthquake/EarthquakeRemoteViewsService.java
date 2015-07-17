@@ -16,7 +16,7 @@ import android.widget.RemoteViewsService;
 public class EarthquakeRemoteViewsService extends RemoteViewsService {
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        return null;
+        return new EarthquakeRemoteViewsFactory(getApplicationContext());
     }
 
     class EarthquakeRemoteViewsFactory implements RemoteViewsFactory {
@@ -30,18 +30,29 @@ public class EarthquakeRemoteViewsService extends RemoteViewsService {
         }
 
         private Cursor executeQuery() {
-            String[] projection = new String[]{EarthquakeProvider.KEY_ID, EarthquakeProvider.KEY_MAGNITUDE, EarthquakeProvider.KEY_DETAILS};
-            ContentResolver cr = context.getContentResolver();
-            Context context = getApplicationContext();
+            String[] projection = new String[] {
+                    EarthquakeProvider.KEY_ID,
+                    EarthquakeProvider.KEY_MAGNITUDE,
+                    EarthquakeProvider.KEY_DETAILS
+            };
 
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-            String selection = EarthquakeProvider.KEY_MAGNITUDE + " > " + preferences.getString(FragmentPreferences.PREF_MIN_MAG, "3");
+            Context appContext = getApplicationContext();
+            SharedPreferences prefs =
+                    PreferenceManager.getDefaultSharedPreferences(appContext);
 
-            return cr.query(EarthquakeProvider.CONTENT_URI, projection, selection, null, null);
+            int minimumMagnitude =
+                    Integer.parseInt(prefs.getString(FragmentPreferences.PREF_MIN_MAG, "3"));
+
+            String where = EarthquakeProvider.KEY_MAGNITUDE + " > " + minimumMagnitude;
+
+            return context.getContentResolver().query(EarthquakeProvider.CONTENT_URI,
+                    projection, where, null, null);
 
         }
 
-        @Override
+
+
+          @Override
         public void onCreate() {
             quakeCursor = executeQuery();
         }
@@ -55,7 +66,6 @@ public class EarthquakeRemoteViewsService extends RemoteViewsService {
         @Override
         public void onDestroy() {
             quakeCursor.close();
-
         }
 
         @Override
@@ -68,20 +78,36 @@ public class EarthquakeRemoteViewsService extends RemoteViewsService {
 
         @Override
         public RemoteViews getViewAt(int position) {
+            // Move the Cursor to the required index.
             quakeCursor.moveToPosition(position);
-            RemoteViews earthquakeRemoteView = new RemoteViews(context.getPackageName(), R.layout.quake_collection_widget);
 
-            earthquakeRemoteView.setTextViewText(R.id.widget_details, quakeCursor.getString(quakeCursor.getColumnIndexOrThrow(EarthquakeProvider.KEY_DETAILS)));
-            earthquakeRemoteView.setTextViewText(R.id.widget_magnitude, quakeCursor.getString(quakeCursor.getColumnIndexOrThrow(EarthquakeProvider.KEY_MAGNITUDE)));
+            // Extract the values for the current cursor row.
+            int idIdx = quakeCursor.getColumnIndex(EarthquakeProvider.KEY_ID);
+            int magnitudeIdx = quakeCursor.getColumnIndex(EarthquakeProvider.KEY_MAGNITUDE);
+            int detailsIdx = quakeCursor.getColumnIndex(EarthquakeProvider.KEY_DETAILS);
 
+            String id = quakeCursor.getString(idIdx);
+            String magnitude = quakeCursor.getString(magnitudeIdx);
+            String details = quakeCursor.getString(detailsIdx);
+
+            // Create a new Remote Views object and use it to populate the
+            // layout used to represent each earthquake in the list.
+            RemoteViews rv = new RemoteViews(context.getPackageName(),
+                    R.layout.quake_widget);
+
+            rv.setTextViewText(R.id.widget_magnitude, magnitude);
+            rv.setTextViewText(R.id.widget_details, details);
+
+            // Create the fill-in Intent that adds the URI for the current item
+            // to the template Intent.
             Intent fillInIntent = new Intent();
-            Uri uri = Uri.withAppendedPath(EarthquakeProvider.CONTENT_URI,quakeCursor.getString(quakeCursor.getColumnIndex(EarthquakeProvider.KEY_ID)));
+            Uri uri = Uri.withAppendedPath(EarthquakeProvider.CONTENT_URI, id);
             fillInIntent.setData(uri);
 
-            earthquakeRemoteView.setOnClickFillInIntent(R.id.widget_magnitude,fillInIntent);
-            earthquakeRemoteView.setOnClickFillInIntent(R.id.widget_details,fillInIntent);
+            rv.setOnClickFillInIntent(R.id.widget_magnitude, fillInIntent);
+            rv.setOnClickFillInIntent(R.id.widget_details, fillInIntent);
 
-            return earthquakeRemoteView;
+            return rv;
         }
 
         @Override
@@ -92,7 +118,7 @@ public class EarthquakeRemoteViewsService extends RemoteViewsService {
 
         @Override
         public int getViewTypeCount() {
-            return 0;
+            return 1;
         }
 
         @Override

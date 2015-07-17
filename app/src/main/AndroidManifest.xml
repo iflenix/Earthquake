@@ -41,7 +41,8 @@
 
         <provider
             android:name=".EarthquakeProvider"
-            android:authorities="com.storm.earthquakeprovider" />
+            android:authorities="com.storm.earthquakeprovider"
+            android:exported="true"/>
         <activity
             android:name=".EarthquakeSearchResults"
             android:label="Earthquake Search"

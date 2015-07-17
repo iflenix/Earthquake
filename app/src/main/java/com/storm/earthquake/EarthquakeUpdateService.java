@@ -7,6 +7,8 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -91,12 +93,19 @@ public class EarthquakeUpdateService extends IntentService {
         //updateTimer.cancel();
         if (autoUpdateChecked) {
             int alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP;
-            long timeTorefresh = SystemClock.elapsedRealtime() + updateFreq * 60 * 1000;
-            alarmManager.setInexactRepeating(alarmType, timeTorefresh, updateFreq * 60 * 1000, alarmIntent);
+            long timeToRefresh = SystemClock.elapsedRealtime() + updateFreq * 60 * 1000;
+            alarmManager.setInexactRepeating(alarmType, timeToRefresh, updateFreq * 60 * 1000, alarmIntent);
         } else
             alarmManager.cancel(alarmIntent);
         refreshEarthquakes();
         sendBroadcast(new Intent(QUAKES_REFRESHED));
+
+        AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
+
+        ComponentName earthquakeWidget = new ComponentName(context,EarthquakeListWidget.class);
+        int[] appWidgetIds = widgetManager.getAppWidgetIds(earthquakeWidget);
+
+        widgetManager.notifyAppWidgetViewDataChanged(appWidgetIds,R.id.widget_list_view);
 
     }
 

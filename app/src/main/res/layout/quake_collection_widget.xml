@@ -12,6 +12,7 @@
         android:layout_height="match_parent"
         android:id="@+id/widget_empty_text"
         android:text="No earthquakes!"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:textColor="#FFFF55AA"/>
 
 </FrameLayout>
